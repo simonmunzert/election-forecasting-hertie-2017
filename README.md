@@ -4,9 +4,10 @@
 
 This repository provides materials for the course "Election forecasting". You'll find the following code:
 
-- `04-fundamentals-models.r`: An R script that shows how to replicate Gschend and Norpoth's Chancellor model and how to set up an out-of-sample forecast.
+- `04-fundamentals-models.r`: An R script that shows how to replicate Gschend and Norpoth's Chancellor model and how to set up an out-of-sample forecast
 - `06-prediction-markets.r`: An R script that provides functions to illustrate how to correct for favorite-longshot bias
-- `digital-data-models.r`: An R script that shows how to tap data from Twitter's streaming API using the `streamR` package, how to gather pageviews data from Wikipedia using the `pageviews` package and the `statsgrokse` package, and how to gather Google Trends data using the `gtrendsR` package
+- `07-digital-data-models.r`: An R script that shows how to tap data from Twitter's streaming API using the `streamR` package, how to gather pageviews data from Wikipedia using the `pageviews` package and the `statsgrokse` package, and how to gather Google Trends data using the `gtrendsR` package
+- `structural-model-parties.r`: An R script that reports an attempt of modeling party-specific vote shares for the German Bundestag elections using a simple fundamentals model
 
 In addition, the `data` folder provides a bunch of Stata datasets relevant to build fundamentals- and polling-based forecasting models for the German federal election. They can be imported using either Stata or R. The datasets are:
 

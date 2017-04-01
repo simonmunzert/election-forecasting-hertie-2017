@@ -4,7 +4,7 @@
 ### ----------------------------------------------------------
 
 # get packages
-p_needed <- c("haven", "plyr", "dplyr", "ROAuth", "streamR", "pageviews", "stringr", "gtrendsR")
+p_needed <- c("haven", "plyr", "dplyr", "ROAuth", "streamR", "pageviews", "statsgrokse", "stringr", "gtrendsR")
 packages <- rownames(installed.packages())
 p_to_install <- p_needed[!(p_needed %in% packages)]
 if (length(p_to_install) > 0) {
@@ -21,9 +21,10 @@ browseURL("https://mkearney.github.io/rtweet/articles/auth.html")
 # how to interact with the streamR package
 browseURL("http://pablobarbera.com/blog/archives/1.html")
 
-## Stream keywords used to filter tweets
+# Stream keywords used to filter tweets
 q <- c("cdu","csu","spd","fdp","grüne","linke","afd","schulz","merkel","btw17")
 
+# load authentication credentials for Twitter. You have to have registered your app online and performed the OAuth authentication process to have this
 load("twitter_auth.RData")
 
 filterStream("german_parties.json", track = q, timeout = 60*1, oauth = twitCred)
@@ -44,6 +45,10 @@ colMeans(mentions_df)
 
 
 ## getting pageviews from Wikipedia ---------------------------
+
+## IMPORTANT: If you want to gather pageviews data before July 2015, you need the statsgrokse package. Check it out here:
+browseURL("https://github.com/cran/statsgrokse")
+
 ls("package:pageviews")
 
 trump_views <- article_pageviews(project = "en.wikipedia", article = "Donald Trump", user_type = "user", start = "2015070100", end = "2017040100")
@@ -52,7 +57,6 @@ clinton_views <- article_pageviews(project = "en.wikipedia", article = "Hillary 
 
 plot(ymd(trump_views$date), trump_views$views, col = "red", type = "l")
 lines(ymd(clinton_views$date), clinton_views$views, col = "blue")
-
 
 german_parties_views <- article_pageviews(
   project = "de.wikipedia", 
@@ -75,6 +79,8 @@ lines(ymd(dat$date), dat$views, col = "brown")
 
 
 ## getting data from Google Trends ---------------------------
+
+# IMPORTANT: The current gtrendsR version that is available on CRAN does not work. Install the develper version from GitHub by uncommenting the following line and running it (you might have to install the devtools package before that)
 #devtools::install_github('PMassicotte/gtrendsR')
 library(gtrendsR)
 gtrends_merkel <- gtrends("Merkel", geo = c("DE"), time = "2016-10-01 2017-03-01")

@@ -12,7 +12,9 @@ p_needed <- c("readr", # imports spreadsheet data
               "janitor", # for basic data tidying and examinations
               "reshape2", # reshape data 
               "xtable", # generate table output
-              "stargazer" # generate nice model table
+              "stargazer", # generate nice model table
+              "babynames", # dataset compiled by Hadley Wickham; contains US baby names provided by the SSA and data on all names used for at least 5 children of either sex
+              "nycflights13" # data set on all 336776 flights departing from NYC in 2013
 )
 packages <- rownames(installed.packages())
 p_to_install <- p_needed[!(p_needed %in% packages)]

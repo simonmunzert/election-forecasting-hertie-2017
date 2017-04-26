@@ -5,7 +5,7 @@ date: "26/04/2017"
 output: html_document
 ---
 
-```{r setup, include=FALSE}
+```{r setup, include=FALSE, echo=FALSE}
 library(knitr)
 opts_chunk$set(message = FALSE, error = TRUE, fig.pos = 'H', tidy.opts=list(width.cutoff=65), tidy=TRUE, fig.path='figs/', cache.path='cache/graphics-', 
            fig.align='center', fig.width = 5, fig.height = 4, fig.show = 'hold',
@@ -21,10 +21,12 @@ library(ggplot2) #plot results
 install.packages("psych", repos = "https://cran.rstudio.com/")
 library(psych) #create summary statistics
 library(plyr) #tools for splitting, qpplying and combining data
+library(data.table)
 
-DAX <- 
+DAX <- fread('https://chart.finance.yahoo.com/table.csv?s=%5EGDAXI&a=10&b=26&c=1990&d=3&e=27&f=2017&g=d&ignore=.csv')
 CDAX <- read.csv("~/hertie-election-forecasting (Akira)/data/^cdax_d.csv")
 GfK <- read.csv('~/hertie-election-forecasting (Akira)/history.csv')
+
 df1 <- merge(df, GfK, by = "Date")
 eco.in <- merge(df, GfK, by = "Date")
 ```
@@ -41,3 +43,9 @@ mtext(side = 4, line = 3, 'GfK Consumer Confidence')
 legend("topleft",
 legend=c(expression(CDAX), "GfK Consumer Confidence"),
 lty=1:1, cex=0.39, col=c("red3", "blue3"))
+```
+
+```{r}
+rm(list = ls())
+```
+

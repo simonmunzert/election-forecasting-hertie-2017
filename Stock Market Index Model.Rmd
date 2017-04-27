@@ -26,20 +26,26 @@ require(haven)
 library(lubridate)
 install.packages("repmis")
 library(repmis)
+install.packages("VIF", repos = "https://cran.rstudio.com/")
+library(VIF)
 DAX <- fread('https://chart.finance.yahoo.com/table.csv?s=%5EGDAXI&a=10&b=26&c=1990&d=3&e=27&f=2017&g=d&ignore=.csv')
 CDAX <- read.csv("~/hertie-election-forecasting (Akira)/data/^cdax_d.csv")
 GfK <- read.csv('~/hertie-election-forecasting (Akira)/GfK.csv')
 GFE_Kayser <- read_dta('~/hertie-election-forecasting (Akira)/BundestagForecastReplicationData.dta')
 GFE <- read_dta('~/hertie-election-forecasting (Akira)/data/ger_nat.dta')
 election_dates <- source_data('~/hertie-election-forecasting/data/election_dates.RData') #not working
-GDP <- read.csv
+GDP <- read.csv('~/hertie-election-forecasting (Akira)/DP_LIVE_26042017111042979.csv')
 GFE$Date <- election_date
 GFE$Date <- ymd(as.character(GFE$Date))
 GFE_Kayser$Date <- as.Date(GFE_Kayser$date, "%d.%m.%Y")
 eco.in <- merge(CDAX, GfK, by = "Date")
+stock_GDP <- merge(CDAX, GDP, by = "Date")
+DAX_GfK <- merge(CDAX, GfK, by = "Date")
+GFE.con <- merge(CDAX, GFE_Kayser, by = "Date")
+
 ```
 
-```{r plot, include=TRUE, echo=TRUE}
+```{r plot CDAX_GfK, include=TRUE, echo=TRUE}
 par(mar = c(5,5,2,5))
 with(eco.in, plot(as.Date(Date), Close, type="l", col="red3",
 xlab="Year", ylab=expression(CDAX)),
@@ -50,8 +56,54 @@ axis(side = 4)
 mtext(side = 4, line = 3, 'GfK Consumer Confidence')
 legend("topleft",
 legend=c(expression(CDAX), "GfK Consumer Confidence"),
-lty=1:1, cex=0.39, col=c("red3", "blue3"))
+lty=1:1, cex=0.75, col=c("red3", "blue3"))
+ccfvalues <- ccf(eco.in$Close, eco.in$Actual)
+ccfvalues
+vifvalues <- lm(Close ~ Actual, eco.in)
+summary(vifvalues)
+vif(vifvalues)
 ```
+
+```{r plot CDAX_GDP, include=TRUE, echo=TRUE}
+stock_GDP <- stock_GDP%>%
+      mutate(stock_gr=log(Close/lag(Close,1)))
+par(mar = c(5,5,2,5))
+with(stock_GDP, plot(as.Date(Date), stock_gr, type="l", col="red3",
+xlab="Year", ylab= "CDAX quarterly growth (%)"),
+ylim=c(0,1200))
+par(new = T)
+with(stock_GDP, plot(as.Date(Date), Value, type="l", axes=F, col="blue3", xlab="Year", ylab=NA, cex=1.2))
+axis(side = 4)
+mtext(side = 4, line = 3, 'GDP quarterly growth (%)')
+legend("topleft",
+legend=c("DAX quarterly growth (%)", "GDP quarterly growth (%)"),
+lty=1:1, cex=0.50, col=c("red3", "blue3"))
+```
+
+```{r plot DAX & GfK, include=TRUE, echo=TRUE}
+par(mar = c(5,5,2,5))
+with(DAX_GfK, plot(as.Date(Date), Close, type="l", col="red3",
+xlab="Year", ylab=expression(DAX)),
+ylim=c(0,1200))
+par(new = T)
+with(eco.in, plot(as.Date(Date), Actual, type="l", axes=F, col="blue3", xlab="Year", ylab=NA, cex=1.2))
+axis(side = 4)
+mtext(side = 4, line = 3, 'GfK Consumer Confidence')
+legend("topleft",
+legend=c(expression(DAX), "GfK Consumer Confidence"),
+lty=1:1, cex=0.75, col=c("red3", "blue3"))
+ccfvalues2 <- ccf(DAX_GfK$Close, DAX_GfK$Actual)
+ccfvalues2
+```
+
+```{r consolidated, include=TRUE, echo=TRUE}
+
+```
+
+```{r regression, include=TRUE, echo=TRUE}
+m <- lm(vote ~ stockindex + voteshare + partisanship + term)
+```
+
 
 ```{r}
 rm(list = ls())

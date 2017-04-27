@@ -36,11 +36,9 @@ abline(0, 1)
 
 
 
-
 ### run multiple models -----------------
-
-d <- select(ger_df_long, voteshare, voteshare_l1, voteshare_l1_3, polls_200_230, chancellor_party, major, gov, parl) 
-dep_var <- 'voteshare'
+d <- select(ger_df_long, swing, swing_l1, voteshare_l1, voteshare_l1_3, polls_200_230, chancellor_party, major, gov, parl) 
+dep_var <- 'swing'
 indep_vars <- setdiff(names(d), dep_var)
 
 lms <- Reduce(append, lapply(seq_along(indep_vars),
@@ -51,15 +49,16 @@ lms <- Reduce(append, lapply(seq_along(indep_vars),
                }))
               }
 ))
+lms[[1]] %>% summary
 length(lms)
 
 sum_tab <- data.frame(model_name = names(lms), 
                       num_vars = sapply(lms, function(x) { x %>% .$coefficients %>% length}) - 1,
-                      #df = sapply(lms, function(x) { summary(x) %>% .$df[2,]}),
                       r_squared = sapply(lms, function(x) { summary(x) %>% .$r.squared}),
                       adj_r_squared = sapply(lms, function(x) { summary(x) %>% .$adj.r.squared})
 )
 sum_tab$ratio <- sum_tab$r_squared / sum_tab$num_vars
+View(sum_tab)
 
 i = 2017
 lms_best <- lms[sum_tab$r_squared > .35]
@@ -68,27 +67,23 @@ lms_best_predictions <- apply(lms_best_predictions, 1, add, filter(ger_df_long, 
 names(lms_best_predictions) <- filter(ger_df_long, year == i)$party
 summary(lms_best_predictions)
 lms_best_predictions$vote_sums <- rowSums(lms_best_predictions)
+summary(lms_best_predictions$vote_sums)
+hist(lms_best_predictions$vote_sums)
 
-
-swing~ltw_swing_mean_200_full+major+voteshare_l1Xelection+polls_200_230yXelection
-swing~ltw_swing_mean_200_full+chancellor_party+voteshare_l1Xelection+polls_200_230yXelection
-swing~swing_l1+voteshare_l1Xelection+polls_200_230yXelection
-swing~swing_l1+voteshare_l1Xelection+polls_200_230yXelection
-swing~ltw_swing_mean_200_full+voteshare_l1Xelection+polls_200_230yXelection
 
 
 ### out-of-sample checks --------------------------------------------------
 
 # prepare formula
-vars <- c("voteshare_l1", "major", "chancellor_party", "gov", "parl", "ltw_swing_mean_100_full", "polls_200_230")
+vars <- c("voteshare_l1", "major", "chancellor_party", "gov", "parl", "ltw_swing_mean_200_full", "polls_200_230")
 fmla <- as.formula(paste("swing ~ ", paste(vars, collapse= "+")))
 
 # run out-of-sample predictions
 model_out <- list()
 model_pred <- list()
-for(i in seq_along(election_year)) {
-  insample <- filter(ger_df_long, year != election_year[i])
-  outsample <- filter(ger_df_long, year == election_year[i])
+for(i in seq_along(election_years)) {
+  insample <- filter(ger_df_long, year != election_years[i])
+  outsample <- filter(ger_df_long, year == election_years[i])
   model_out[[i]] <- lm(fmla, data = insample)
   model_pred[[i]] <- augment(model_out[[i]], newdata = outsample, type.predict = "response")
 }
@@ -107,7 +102,6 @@ abline(0, 1)
 
 ### predictions for 2005, 2009, 2013, 2017 elections ---------------------
 
-#sink("sink-predictions.txt")
 voteshares_pred_list <- list()
 elections <- c(2005, 2009, 2013, 2017)
 for (i in 1:4) {
@@ -128,112 +122,23 @@ for (i in 1:4) {
   print(voteshares_pred_df)
   voteshares_pred_list[[i]] <- voteshares_pred_df
 }
-#sink()
 save(voteshares_pred_list, file = "structural_forecasts_lm.RData")
 
 
 
+### arriving at event probabilities / simulate predictions ---------------------
 
+model_out <- lm(voteshare ~ chancellor_party + voteshare_l1 + polls_200_230, data = ger_df_long)
+voteshare_pred <- predict(model_out, filter(ger_df_long, year == 2017), se.fit = TRUE, interval = "prediction")
 
+voteshare_pred_sim <- replicate(1000, rnorm(rep(1, length(voteshare_pred$fit[,"fit"])), mean = voteshare_pred$fit[,"fit"], sd = sqrt(voteshare_pred$se.fit^2+var(model_out$residuals)))) %>% t() %>% as.data.frame
 
+names(voteshare_pred_sim) <- filter(ger_df_long, year == 2017)$party %>% as.character
+plot(density(voteshare_pred_sim$cdu), xlim = c(20, 50))
+lines(density(voteshare_pred_sim$spd), col = "red")
 
+prop.table(table(voteshare_pred_sim$cdu > voteshare_pred_sim$spd))
+prop.table(table(voteshare_pred_sim$fdp < 5))
+prop.table(table(voteshare_pred_sim$gru < 5))
 
-
-### VON STIMMANTEILEN ZU SIEGESWAHRSCHEINLICHKEITEN
-### ----------------------------------------------------------
-
-?pnorm
-
-est.mean <- prediction$fit[1]
-est.se <- prediction$se.fit[1]
-est.lower <- prediction$fit[2]
-est.upper <- prediction$fit[3]
-
-# Grafische Darstellung
-# Normalverteilungskurve auf Basis von y_hat und sd_hat
-x <- seq(40,60, length=500)
-y <- dnorm(x,mean=est.mean,sd=est.se)
-plot(x,y,type="l",lwd=2)
-abline(v=50, lty=2)
-
-# Fl?che, die der Wahrscheinlichkeit f?r y >= 50 entspricht
-x <- seq(50,100,length=500)
-y <- dnorm(x,mean=est.mean,sd=est.se)
-polygon(c(50,x,100),c(0,y,0),col="gray")
-
-# Berechnung
-pnorm(50, mean=prediction$fit[1], sd=prediction$se.fit[1], lower.tail = FALSE)
-pnorm(50, mean=prediction$fit[1], sd=prediction$se.fit[1], lower.tail = TRUE)
-est.mean + qt(.975, 12) * est.se
-est.mean - qt(.975, 12) * est.se
-
-# ?berlappung von Kurven: Wie wahrscheinlich ist es, dass Kandidat 1 mehr Stimmen bekommt als Kandidat 2?
-x <- seq(40,60, length=500)
-kand.1 <- function(x) dnorm(x, mean=36, sd=1)
-kand.2 <- function(x) dnorm(x, mean=33, sd=1)
-curve(kand.1, from = 30, to = 40, n=500, type="l",lwd=2)
-curve(kand.2, from = 30, to = 40, n=500, type="l",lwd=2, col="red", add=T)
-text(37, .4, "Kand. 1")
-text(34, .4, "Kand. 2", col="red")
-
-# Differenz zweier unabh?ngiger normalverteilter Variablen ist ebenfalls normalverteilt, und zwar
-diff.mean <- 36 - 33
-diff.se <- sqrt(1^2 + 1^2)
-pnorm(0, mean=diff.mean, sd=diff.se, lower.tail = TRUE)
-
-
-
-
-
-
-# Datensatz neu laden
-(us.df <- read.dta("usa_presidential.dta", convert.underscore = TRUE))
-
-# Daten vorbereiten
-(y <- us.df$incvoteshare[-1])
-(x <-subset(us.df[-1,], select=-c(year,incvoteshare)))
-(outcome    <- c("incvoteshare"))
-(predictors <- names(x))
-dataset    <- us.df
-new <- data.frame("gdpgrowth.q1"=c(-1.5,2.5), "gdpgrowth.q2"=c(-2,1), "incapproval" = c(-20,20), "inc2terms" = c(1,0), "incdem" = c(1,0))
-
-# Liste von Modellen erstellen
-list.of.models <- lapply(seq_along((predictors)), function(n) {
-  left.hand.side  <- outcome
-  right.hand.side <- apply(X = combn(predictors, n), MARGIN = 2, paste, collapse = " + ")
-  paste(left.hand.side, right.hand.side, sep = "  ~  ")
-})
-
-# Liste in Vektor umwandeln
-vector.of.models <- unlist(list.of.models)
-
-# Lineares Modell sch?tzen f?r alle Modelle; interessierende Gr??en extrahieren
-list.of.fits <- lapply(vector.of.models, function(x) {
-  
-  formula    <- as.formula(x)
-  fit        <- lm(formula, data = dataset)
-  adj.r2 <- summary(fit)$adj.r.squared
-  result.AIC <- extractAIC(fit)
-  prediction.01 <- predict(fit, new)[1]
-  prediction.02 <- predict(fit, new)[2]
-  
-  data.frame(num.predictors = result.AIC[1],
-             adjr2          = summary(fit)$adj.r.squared[1],
-             model          = x,
-             ypred.01		  = prediction.01,
-             ypred.02		  = prediction.02)
-})
-
-
-# Ergebnisse in ein data.frame schreiben
-result <- do.call(rbind, list.of.fits)
-
-# ?berblick ?ber Vorhersagen
-result[order(result$adjr2),]
-hist(result$ypred.01)
-hist(result$ypred.02)
-
-# Spezifikationsunsicherheit
-summary(result$ypred.01)
-sd(result$ypred.01)
 

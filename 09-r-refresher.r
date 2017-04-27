@@ -43,10 +43,12 @@ x
 3.1415
 3,1415
 # commas are very important when it comes to matrices and data frames: they separate row from column values
-(mat <- matrix(c("this", "is", "a", "matrix"), nrow = 2, byrow = TRUE))
+mat <- matrix(c("this", "is", "a", "matrix"), nrow = 2, byrow = TRUE)
 mat[1,2]
 mat[1,]
 mat[,1]
+
+
 
 # - we use # to comment in the code
 # - the RStudio editor provides auto completion (use 'TAB')
@@ -190,15 +192,15 @@ filter(dat, month == 1, day == 1) %>% head()
 slice(dat, 1:10)
 
 # arrange rows
-arrange(dat, dep_time, arr_time) %>% head()
+arrange(dat, dep_time, arr_time) %>% View()
 dat[order(dat$dep_time, dat$arr_time),] %>% head()
-arrange(dat, desc(dep_time), arr_time)	
+arrange(dat, desc(dep_time), arr_time)	 %>% head()
 
 # select variables
-select(dat, year, month, day) %>% head
-select(dat, year:day) %>% head
-select(dat, -(year:day)) %>% head
-select(dat, contains("time")) %>% head
+select(dat, year, month, day) %>% head()
+select(dat, year:day) %>% head()
+select(dat, -(year:day)) %>% head()
+select(dat, contains("time")) %>% head()
 # also possible: starts_with("abc"), ends_with("xyz"), matches("(.)\\1"), num_range("x", 1:3)
 ?select_helpers
 
@@ -216,7 +218,7 @@ mutate(dat, gain = arr_delay - dep_delay, gain_per_hour = gain / (air_time / 60)
 # create variables, only keep new ones
 transmute(dat, gain = arr_delay - dep_delay, gain_per_hour = gain / (air_time / 60)) %>% head
 
-# summarize values; colapse data frame into single row
+# summarize values; collapse data frame into single row
 summarize(dat, delay_mean = (mean(dep_delay, na.rm = TRUE)))
 
 # grouped operations with group_by()
@@ -285,10 +287,10 @@ sum(y, na.rm = TRUE)
 y*3
 
 # seq and rep
-seq(1, 10, 2)
-seq_along(x)
+seq(1, 10, 3)
 rep(c(1, 2, 3), 2)
 rep(c(1, 2, 3), each = 2)
+seq_along(x)
 
 # sorting
 vec1 <- c(2, 20, -5, 1, 200)
@@ -324,17 +326,18 @@ countries[2]
 xzz[1:6] # xzz[seq(1,6)], xzz[c(1,2,3,4,5,6)]
 xzz[c(2, 5, 10)]
 xzz[-1]
-xzz[Hessen]
+xzz[Bavaria]
 xzz[seq(0, 10, by = 2)]
 xzz[c(TRUE, FALSE, TRUE, TRUE, FALSE, TRUE, TRUE, FALSE, FALSE, FALSE)]
 y
 y[is.na(y)]
 y[!is.na(y)]
-y[y>5 | !is.na(y)]
+y[y > 5 & !is.na(y)]
 
 countries
 countries[3] <- "Switzerland"
 countries
+
 
 xzz
 xzz[c(1 ,3 ,5 )] <- c(100,110,120)
@@ -342,6 +345,7 @@ xzz_new <- xzz
 xzz_new[xzz <= 100] <- 0
 xzz_new[xzz > 100] <- 1
 xzz_new
+ifelse(xzz > 100, 1, 0)
 
 
 
@@ -490,6 +494,8 @@ dat <- data.frame(x = 1:20, y = rep(letters[1:5], each = 4))
 tapply(dat$x, dat$y, sum) # data, index, function
 
 
+
+
 # ************************************************
 # FUNCTIONS --------------------------------------
 
@@ -618,7 +624,7 @@ gauss(100)
 # 1. Install and load the package "nycflights13"!
 library(nycflights13)
 
-# 2. How many varibles and observations does the data.frame "flights" from the nycflights13 package contain?
+# 2. How many variables and observations does the data.frame "flights" from the nycflights13 package contain?
 names(flights)
 View(flights)
 dim(flights)

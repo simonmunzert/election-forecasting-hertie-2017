@@ -22,10 +22,13 @@ install.packages("psych", repos = "https://cran.rstudio.com/")
 library(psych) #create summary statistics
 library(plyr) #tools for splitting, qpplying and combining data
 library(data.table)
+require(haven)
 
 DAX <- fread('https://chart.finance.yahoo.com/table.csv?s=%5EGDAXI&a=10&b=26&c=1990&d=3&e=27&f=2017&g=d&ignore=.csv')
 CDAX <- read.csv("~/hertie-election-forecasting (Akira)/data/^cdax_d.csv")
 GfK <- read.csv('~/hertie-election-forecasting (Akira)/history.csv')
+GFE <- read_dta('~/hertie-election-forecasting (Akira)/BundestagForecastReplicationData.dta')
+GFE_Kayser <- read_dta('~/hertie-election-forecasting (Akira)/data/ger_nat.dta')
 
 df1 <- merge(df, GfK, by = "Date")
 eco.in <- merge(df, GfK, by = "Date")

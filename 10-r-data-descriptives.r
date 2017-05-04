@@ -4,6 +4,7 @@
 ### data preparation and descriptives
 # ************************************************
 
+
 source("packages.r")
 source("functions.r")
 
@@ -25,7 +26,7 @@ ger_df$spd_gov[ger_df$year == 2005] <- 1
 # add vote shares for others
 ger_df$npd_share <- NULL
 ger_df$npd_seats <- NULL
-ger_df <- mutate(ger_df, oth_share = 100 - cdsu_share - spd_share - fdp_share - gru_share - lin_share - afd_share)  # create voteshare for others 
+ger_df <- mutate(ger_df, oth_share = 100 - cdsu_share - spd_share - fdp_share - gru_share - lin_share - afd_share)  
 
 # make df long
 ger_df_long <- select(ger_df, ends_with("_share"), year) %>% 
@@ -104,8 +105,8 @@ save(ger_df_long, file = "./data/ger_model_df.RData")
 
 # generate summary table
 ger_df_sub <- select(ger_df_long, voteshare, voteshare_l1, chancellor_party, polls_200_230)
-summary(ger_df_long)
-stargazer(ger_df_sub, title = "Summary statistics", type = "latex", out = "figures/sumstats.tex")
+summary(ger_df_sub)
+stargazer(ger_df_sub, title = "Summary statistics", type = "latex", out = "figures/sumstats.latex")
 
 # stargazer cheatsheet
 browseURL("http://jakeruss.com/cheatsheets/stargazer.html")

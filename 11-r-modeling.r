@@ -37,10 +37,13 @@ abline(0, 1)
 
 
 ### run multiple models -----------------
+
+# define set of independent variables and dependent variable
 d <- select(ger_df_long, swing, swing_l1, voteshare_l1, voteshare_l1_3, polls_200_230, chancellor_party, major, gov, parl) 
 dep_var <- 'swing'
 indep_vars <- setdiff(names(d), dep_var)
 
+# run all possible models
 lms <- Reduce(append, lapply(seq_along(indep_vars),
              function(num_vars) {
                Reduce(append, apply(combn(length(indep_vars), num_vars), 2, function(vars) {
@@ -52,6 +55,7 @@ lms <- Reduce(append, lapply(seq_along(indep_vars),
 lms[[1]] %>% summary
 length(lms)
 
+# get overview of model performance
 sum_tab <- data.frame(model_name = names(lms), 
                       num_vars = sapply(lms, function(x) { x %>% .$coefficients %>% length}) - 1,
                       r_squared = sapply(lms, function(x) { summary(x) %>% .$r.squared}),
@@ -60,12 +64,17 @@ sum_tab <- data.frame(model_name = names(lms),
 sum_tab$ratio <- sum_tab$r_squared / sum_tab$num_vars
 View(sum_tab)
 
+# create multiple predictions for 2017 
 i = 2017
 lms_best <- lms[sum_tab$r_squared > .35]
 lms_best_predictions <- sapply(lms_best, predict.lm, newdata = filter(ger_df_long, year == i)) %>% t() %>% as.data.frame() 
 lms_best_predictions <- apply(lms_best_predictions, 1, add, filter(ger_df_long, year == i)$voteshare_l1) %>% t() %>% as.data.frame
+
+# summarize predictions
 names(lms_best_predictions) <- filter(ger_df_long, year == i)$party
 summary(lms_best_predictions)
+
+# check if predictions are (more or less) logically consistent
 lms_best_predictions$vote_sums <- rowSums(lms_best_predictions)
 summary(lms_best_predictions$vote_sums)
 hist(lms_best_predictions$vote_sums)
@@ -75,8 +84,8 @@ hist(lms_best_predictions$vote_sums)
 ### out-of-sample checks --------------------------------------------------
 
 # prepare formula
-vars <- c("voteshare_l1", "major", "chancellor_party", "gov", "parl", "ltw_swing_mean_200_full", "polls_200_230")
-fmla <- as.formula(paste("swing ~ ", paste(vars, collapse= "+")))
+vars <- c("voteshare_l1",  "chancellor_party", "polls_200_230")
+fmla <- as.formula(paste("voteshare ~ ", paste(vars, collapse= "+")))
 
 # run out-of-sample predictions
 model_out <- list()
@@ -90,10 +99,10 @@ for(i in seq_along(election_years)) {
 
 # evaluate fit
 model_pred_df <- do.call(rbind, model_pred)
-mean(abs(model_pred_df$swing - model_pred_df$.fitted), na.rm = TRUE)
-group_by(model_pred_df, party) %>% summarize(mae = mean(abs(swing - .fitted), na.rm = TRUE))
-plot(model_pred_df$.fitted, model_pred_df$swing, cex = .5, pch = 20)
-text(model_pred_df$.fitted, model_pred_df$swing, paste0(model_pred_df$party, str_sub(as.character(model_pred_df$year), -2, -1)), pos = 3, offset = .15, cex = .6)
+mean(abs(model_pred_df$voteshare - model_pred_df$.fitted), na.rm = TRUE)
+group_by(model_pred_df, party) %>% summarize(mae = mean(abs(voteshare - .fitted), na.rm = TRUE))
+plot(model_pred_df$.fitted, model_pred_df$voteshare, cex = .5, pch = 20)
+text(model_pred_df$.fitted, model_pred_df$voteshare, paste0(model_pred_df$party, str_sub(as.character(model_pred_df$year), -2, -1)), pos = 3, offset = .15, cex = .6)
 grid()
 abline(0, 1)
 

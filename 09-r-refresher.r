@@ -663,24 +663,3 @@ mean_delay_sorted <- sort(mean_delay, decreasing = TRUE)
 # b) y = sin(x) + cos(x), x in [-pi, pi]
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-b

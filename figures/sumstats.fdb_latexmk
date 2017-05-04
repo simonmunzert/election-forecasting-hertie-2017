@@ -1,7 +1,10 @@
 # Fdb version 3
-["pdflatex"] 0 "sumstats.tex" "sumstats.pdf" "sumstats" 0
+["pdflatex"] 1493319215 "sumstats.tex" "sumstats.pdf" "sumstats" 1493319215
+  "/usr/local/texlive/2016/texmf-dist/web2c/texmf.cnf" 1463093894 31953 b9489e6e586f798610c60aec1f5ec548 ""
+  "/usr/local/texlive/2016/texmf-var/web2c/pdftex/pdflatex.fmt" 1488538160 3873396 a51be6fa74b560348fe4725d987463ac ""
+  "/usr/local/texlive/2016/texmf.cnf" 1463979140 577 2938757e76f31531e65cc647e3507693 ""
   "sumstats.aux" 1493319215 8 a94a2480d3289e625eea47cd1b285758 ""
-  "sumstats.tex" 0 -1 0 ""
+  "sumstats.tex" 1493319214 1145 22fae69fcb2e12a9f8915ea4c2225f8f ""
   (generated)
   "sumstats.pdf"
   "sumstats.log"

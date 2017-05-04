@@ -1,10 +1,10 @@
 # Fdb version 3
-["makeindex latex-paper.idx"] 1493318528 "latex-paper.idx" "latex-paper.ind" "latex-paper" 1493319228
-  "latex-paper.idx" 1493319227 0 d41d8cd98f00b204e9800998ecf8427e ""
+["makeindex latex-paper.idx"] 1493318528 "latex-paper.idx" "latex-paper.ind" "latex-paper" 1493379258
+  "latex-paper.idx" 1493379258 0 d41d8cd98f00b204e9800998ecf8427e ""
   (generated)
-  "latex-paper.ind"
   "latex-paper.ilg"
-["pdflatex"] 1493319227 "latex-paper.tex" "latex-paper.pdf" "latex-paper" 1493319228
+  "latex-paper.ind"
+["pdflatex"] 1493379257 "latex-paper.tex" "latex-paper.pdf" "latex-paper" 1493379258
   "/usr/local/texlive/2016/texmf-dist/fonts/enc/dvips/newtx/ntx-ec-tlf.enc" 1439157308 2880 847ca622ad468c3dafba6a3f9d89a636 ""
   "/usr/local/texlive/2016/texmf-dist/fonts/map/fontname/texfonts.map" 1272929888 3287 e6b82fe08f5336d4d5ebc73fb1152e87 ""
   "/usr/local/texlive/2016/texmf-dist/fonts/tfm/impallari/cabin/Cabin-Regular-tlf-t1.tfm" 1353885665 41636 fecd743d60f2dedd66d0a5cb900afd7a ""
@@ -233,13 +233,13 @@
   "/usr/local/texlive/2016/texmf-var/fonts/map/pdftex/updmap/pdftex.map" 1488538110 1888048 f2c5faed5981a516f406b2ccc20bff71 ""
   "/usr/local/texlive/2016/texmf-var/web2c/pdftex/pdflatex.fmt" 1488538160 3873396 a51be6fa74b560348fe4725d987463ac ""
   "/usr/local/texlive/2016/texmf.cnf" 1463979140 577 2938757e76f31531e65cc647e3507693 ""
-  "latex-paper.aux" 1493319228 1211 bd40e1c467e27709092b085d616f2aee ""
+  "latex-paper.aux" 1493379258 1211 bd40e1c467e27709092b085d616f2aee ""
   "latex-paper.ind" 1493318528 0 d41d8cd98f00b204e9800998ecf8427e "makeindex latex-paper.idx"
-  "latex-paper.out" 1493319228 0 d41d8cd98f00b204e9800998ecf8427e ""
-  "latex-paper.tex" 1493319225 4298 86371d0d47ef3be4cf5dd0f8857e6c3e ""
+  "latex-paper.out" 1493379258 0 d41d8cd98f00b204e9800998ecf8427e ""
+  "latex-paper.tex" 1493379256 4399 28c2aae6c849444de05c1433f63a4198 ""
   (generated)
-  "latex-paper.idx"
   "latex-paper.log"
-  "latex-paper.out"
   "latex-paper.pdf"
   "latex-paper.aux"
+  "latex-paper.idx"
+  "latex-paper.out"
